@@ -1,8 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import Register from './Components/Register';
+import Login from './Components/Login';
 
 const App = () => {
-    return <h1>Hello, React in Laravel!</h1>;
+    return (
+        <div>
+            <Register />
+            <Login />
+        </div>
+    );
 };
 
-ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+const root = document.getElementById('app');
+if (!root) {
+    throw new Error('Could not find element with id "app"');
+}
+    ReactDOM.createRoot(root).render(<App />);
