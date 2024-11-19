@@ -27,7 +27,9 @@ class PromptController extends Controller
             'tags.*' => 'string|max:50',
         ]);
 
-        $prompt = Prompt::create($validated);
+        $prompt = Prompt::create(array_merge($validated, [
+            'user_id' => auth()->id(),
+        ]));
 
         return response()->json($prompt, 201);
     }
