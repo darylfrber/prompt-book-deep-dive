@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Login = ({ setIsLoggedIn }) => {
     const [emailOrUsername, setEmailOrUsername] = useState('');
@@ -74,6 +75,10 @@ const Login = ({ setIsLoggedIn }) => {
                     {isLoading ? 'Logging in...' : 'Login'}
                 </button>
             </form>
+
+            <div className="text-center mt-4">
+                <p>Don't have an account? <Link to="/register" className="text-blue-500 hover:text-blue-700">Register here</Link></p>
+            </div>
         </div>
     );
 };
