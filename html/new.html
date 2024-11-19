@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Prompt book</title>
+</head>
+
+<body>
+
+  <nav class="flex justify-between items-center p-4 text-black">
+    <div class="flex items-center space-x-2">
+      <img src="logo.png" alt="Logo" class="w-10 h-10">
+      <span class="text-xl font-bold">Prompt Book</span>
+    </div>
+    <button class="bg-orange-500 hover:bg-orange-300 text-white font-bold py-2 px-4 border-b-4 border-orange-700 hover:border-orange-500 rounded">
+      Log in!
+    </button>
+    
+  </nav>
+  <main class="flex flex-col items-center gap-6 mt-16">
+    <h1 class="text-3xl font-bold text-center">
+      Power up your AI!
+      <br class="hidden md:inline">
+      <span class="text-orange-500">Easy to use prompts!</span>
+    </h1>
+    <p class="text-gray-600 text-center max-w-md">
+      Quickly get prompts to level up your AI experience.
+    </p>
+    <form class="flex items-center w-full max-w-md mt-6">
+      <div class="relative group w-full">
+        <div
+          class="absolute -inset-1.5 bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200">
+        </div>
+        <input type="text" placeholder="Search for prompts..."
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-orange-500 relative z-10">
+        <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-orange-500 z-20">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+        </span>
+      </div>
+    </form>
+  </main>
+  
+  <div class="fixed bottom-0 left-0 w-full bg-white py-4 sm:py-6 shadow-md">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 class="text-center text-lg font-semibold text-gray-900">Trending Prompts</h2>
+      <div class="mx-auto mt-10 grid max-w-lg grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-10 sm:max-w-xl lg:mx-0 lg:max-w-none">
+
+        <div class="p-4 bg-gradient-to-r from-orange-200 to-orange-300 rounded-md shadow-sm hover:shadow-md transition duration-200">
+          <h3 class="text-center text-lg font-bold text-gray-800">Prompt 1</h3>
+          <p class="text-center text-sm text-gray-600 mt-2">Description or details about the prompt.</p>
+        </div>
+
+        <div class="p-4 bg-gradient-to-r from-orange-200 to-orange-300 rounded-md shadow-sm hover:shadow-md transition duration-200">
+          <h3 class="text-center text-lg font-bold text-gray-800">Prompt 2</h3>
+          <p class="text-center text-sm text-gray-600 mt-2">Description or details about the prompt.</p>
+        </div>
+
+        <div class="p-4 bg-gradient-to-r from-orange-200 to-orange-300 rounded-md shadow-sm hover:shadow-md transition duration-200">
+          <h3 class="text-center text-lg font-bold text-gray-800">Prompt 3</h3>
+          <p class="text-center text-sm text-gray-600 mt-2">Description or details about the prompt.</p>
+        </div>
+
+        <div class="p-4 bg-gradient-to-r from-orange-200 to-orange-300 rounded-md shadow-sm hover:shadow-md transition duration-200">
+          <h3 class="text-center text-lg font-bold text-gray-800">Prompt 4</h3>
+          <p class="text-center text-sm text-gray-600 mt-2">Description or details about the prompt.</p>
+        </div>
+
+        <div class="p-4 bg-gradient-to-r from-orange-200 to-orange-300 rounded-md shadow-sm hover:shadow-md transition duration-200">
+          <h3 class="text-center text-lg font-bold text-gray-800">Prompt 5</h3>
+          <p class="text-center text-sm text-gray-600 mt-2">Description or details about the prompt.</p>
+        </div>
+        
+      </div>
+    </div>
+  
+
+</body>
+
+</html>
