@@ -105,15 +105,23 @@ class UserController extends Controller
             ], 404);
         }
 
-        // Haal de followers en prompts op
-        $followers = $user->followers;
+        // Verhoog de page_counter met 1
+        $user->page_counter = $user->page_counter + 1;
+        $user->save();  // Sla de wijziging op
+
+        // Haal de aantallen followers en following op
+        $followersCount = $user->followers()->count(); // Aantal volgers
+        $followingCount = $user->following()->count(); // Aantal mensen die deze gebruiker volgt
+
+        // Voeg de aantallen toe aan de gebruiker
+        $user->followers_count = $followersCount;
+        $user->following_count = $followingCount;
+
+        // Haal de prompts op
         $prompts = $user->prompts;
 
         return response()->json([
             'user' => $user,
-            'followers' => $followers,
-            'prompts' => $prompts,
         ], 200);
     }
-
 }

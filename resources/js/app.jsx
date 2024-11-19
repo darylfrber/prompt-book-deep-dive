@@ -19,9 +19,22 @@ routes.unshift({
     element: React.createElement(pages['./Pages/Home.tsx'].default),
 });
 
+// Voeg een route toe voor /profile zonder naam (404 pagina)
 routes.push({
-    path: '*',
-    element: <div>404 - Page Not Found</div>,
+    path: '/profile', // Zorg ervoor dat /profile zonder naam naar een 404-pagina leidt
+    element: <div>404 - Profile not found</div>, // 404 pagina
+});
+
+// Voeg de dynamische profielroute toe
+routes.push({
+    path: '/profile/:name', // Dynamische route voor profiel
+    element: React.createElement(pages['./Pages/Profile.jsx'].default), // Profile component
+});
+
+// Voeg een route toe voor 404 als een pagina niet bestaat
+routes.push({
+    path: '*', // Dit vangt alle onbekende routes
+    element: <div>404 - Page Not Found</div>, // 404 pagina voor onbekende routes
 });
 
 const router = createBrowserRouter(routes);
