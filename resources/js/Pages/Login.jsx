@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = ({ setIsLoggedIn }) => {
-    const [emailOrUsername, setEmailOrUsername] = useState(''); // Wijzig de naam naar emailOrUsername
+    const [emailOrUsername, setEmailOrUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    const navigate = useNavigate();
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -13,18 +17,15 @@ const Login = ({ setIsLoggedIn }) => {
         setIsLoading(true);
 
         try {
-            // Verstuur de email of gebruikersnaam samen met het wachtwoord
             const response = await axios.post('/api/login', { email_or_username: emailOrUsername, password });
 
-            // Sla het token op in localStorage
             localStorage.setItem('token', response.data.token);
-            // setIsLoggedIn(true);  // Zet de inlogstatus naar true
 
-            alert('Login successful!');
+            navigate('/home');
+
         } catch (err) {
             setIsLoading(false);
 
-            // Log de error om meer informatie te krijgen
             console.error("Login error:", err);
 
             if (err.response && err.response.data) {
@@ -53,9 +54,9 @@ const Login = ({ setIsLoggedIn }) => {
                 <div>
                     <label className="block text-gray-700">Email or Username</label>
                     <input
-                        type="text" // We gebruiken 'text' zodat zowel email als gebruikersnaam ingevoerd kunnen worden
-                        value={emailOrUsername}  // Verbind de input met de state
-                        onChange={(e) => setEmailOrUsername(e.target.value)}  // Update de waarde van de state
+                        type="text"
+                        value={emailOrUsername}
+                        onChange={(e) => setEmailOrUsername(e.target.value)}
                         className="w-full border border-gray-300 p-2 rounded"
                         required
                     />
@@ -78,6 +79,10 @@ const Login = ({ setIsLoggedIn }) => {
                     {isLoading ? 'Logging in...' : 'Login'}
                 </button>
             </form>
+
+            <div className="text-center mt-4">
+                <p>Don't have an account? <Link to="/register" className="text-blue-500 hover:text-blue-700">Register here</Link></p>
+            </div>
         </div>
     );
 };

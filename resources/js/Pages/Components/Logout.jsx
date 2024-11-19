@@ -1,19 +1,21 @@
 import React from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // Importeer useNavigate
 
 const Logout = ({ setIsLoggedIn }) => {
+    const navigate = useNavigate();  // Maak de navigate functie beschikbaar
+
     const handleLogout = async () => {
         try {
-            // Stuur logout verzoek naar de server
             await axios.post('/api/logout', {}, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
 
             // Verwijder het token uit localStorage
             localStorage.removeItem('token');
-            setIsLoggedIn(false);  // Zet de loginstatus naar false
+            setIsLoggedIn(false);
 
-            alert('Logout successful!');
+            navigate('/');
         } catch (error) {
             console.error('Error logging out:', error);
         }
