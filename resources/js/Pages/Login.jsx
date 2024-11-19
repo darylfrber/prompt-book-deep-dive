@@ -21,7 +21,7 @@ const Login = ({ setIsLoggedIn }) => {
 
             localStorage.setItem('token', response.data.token);
 
-            navigate('/home');
+            navigate('/');
 
         } catch (err) {
             setIsLoading(false);
