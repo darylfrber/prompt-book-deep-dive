@@ -182,6 +182,26 @@ const SinglePrompt = () => {
 
                     </div>
 
+                    {/* Tags Section */}
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">Tags</h3>
+                        <div className="flex flex-wrap justify-center gap-3">
+                            {prompt.tags && prompt.tags.length > 0 ? (
+                                prompt.tags.map((tag, index) => (
+                                    <span
+                                        key={index}
+                                        className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full shadow-sm hover:bg-blue-200 transition-colors"
+                                    >
+                    {tag}
+                </span>
+                                ))
+                            ) : (
+                                <p className="text-gray-600 text-sm">No tags available.</p>
+                            )}
+                        </div>
+                    </div>
+
+
                     {/* Review formulier */}
                     <div className="mt-8">
                         <h3 className="text-lg font-semibold text-gray-800 mb-4">Leave a Review</h3>
