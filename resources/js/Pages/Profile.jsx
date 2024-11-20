@@ -1,25 +1,32 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom'; // Voeg Link toe voor navigatie
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from './Components/Navbar';
 
 const Profile = () => {
-    const { name } = useParams(); // Haal de naam op uit de URL
+    const { name } = useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [favouritePrompts, setFavouritePrompts] = useState([]);
 
-    // useRef om te controleren of de API-aanroep al is gedaan
     const hasFetched = useRef(false);
 
     useEffect(() => {
-        if (hasFetched.current) return; // Voorkom dubbele API-aanroepen
+        if (hasFetched.current) return;
 
         const fetchUserData = async () => {
             try {
-                // Maak de API-aanroep naar de gebruikersinformatie
                 const response = await axios.get(`/api/user/${name}`);
                 setUser(response.data.user);
+
+                // Haal de favoriete prompts van de gebruiker op
+                const favPrompts = response.data.user.favourites;
+                const prompts = response.data.user.prompts;
+
+                // Filter de prompts die als favorieten zijn gemarkeerd
+                const favouritePromptsData = prompts.filter(prompt => favPrompts.includes(prompt.id));
+                setFavouritePrompts(favouritePromptsData);
             } catch (err) {
                 setError('User not found');
             } finally {
@@ -28,10 +35,9 @@ const Profile = () => {
         };
 
         fetchUserData();
-        hasFetched.current = true; // Markeer als opgehaald
+        hasFetched.current = true;
     }, [name]);
 
-    // Wacht tot de gegevens zijn geladen of toon een foutmelding
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -41,10 +47,10 @@ const Profile = () => {
     }
 
     const formattedDate = new Date(user.created_at).toLocaleDateString('en-GB', {
-        weekday: 'long', // Dagen van de week
-        year: 'numeric', // Jaar
-        month: 'long',   // Maand als volledige naam
-        day: 'numeric'   // Dag van de maand
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
     });
 
     // Toon de gebruikersinformatie
@@ -124,75 +130,23 @@ const Profile = () => {
                 </div>
 
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Favoriete prompts */}
-                    <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mt-8">
+                    {/* Favourite Prompts */}
+                    <div className="w-full sm:w-[500px] lg:w-[500px]">
                         <h3 className="text-md font-semibold text-gray-800 mb-2">Favourite Prompts</h3>
-                        <div className="flex flex-col gap-4">
-                            {/* Prompt 1 */}
-                            <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg shadow-sm bg-white">
-                                <div
-                                    className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">F
-                                </div>
-                                <div className="flex-1">
-                                    <h4 className="text-sm font-semibold text-gray-800">Generate a startup pitch
-                                        deck</h4>
-                                    <p className="text-sm text-gray-600">A guide to create an effective presentation for
-                                        investors.</p>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-sm text-gray-800 font-semibold">Rating</p>
-                                    <div className="flex items-center gap-1 text-orange-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor"
-                                             viewBox="0 0 24 24">
-                                            <path
-                                                d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z"/>
-                                        </svg>
-                                        <p className="text-gray-800 font-medium">4.5</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Prompt 2 */}
-                            <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg shadow-sm bg-white">
-                                <div
-                                    className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">F
-                                </div>
-                                <div className="flex-1">
-                                    <h4 className="text-sm font-semibold text-gray-800">AI-generated poetry</h4>
-                                    <p className="text-sm text-gray-600">Generate a poem based on a selected theme and
-                                        style.</p>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-sm text-gray-800 font-semibold">Rating</p>
-                                    <div className="flex items-center gap-1 text-orange-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor"
-                                             viewBox="0 0 24 24">
-                                            <path
-                                                d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z"/>
-                                        </svg>
-                                        <p className="text-gray-800 font-medium">4.8</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Zelf aangemaakte prompts */}
-                    <div>
-                        <h3 className="text-md font-semibold text-gray-800 mb-2">My Prompts</h3>
-                        <div className="flex flex-col gap-4">
-                            {user.prompts.length > 0 ? (
-                                user.prompts.map((prompt) => (
+                        <div className="flex flex-col gap-6">
+                            {favouritePrompts.length > 0 ? (
+                                favouritePrompts.map((prompt) => (
                                     <Link to={`/prompt/${prompt.id}`} key={prompt.id}
-                                          className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg shadow-sm bg-white hover:bg-gray-100 transition-all">
+                                          className="flex items-center gap-4 bg-gray-50 p-6 rounded-lg shadow-lg bg-white hover:bg-gray-100 transition-all">
                                         <div
-                                            className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">M
+                                            className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">F
                                         </div>
                                         <div className="flex-1">
                                             <h4 className="text-sm font-semibold text-gray-800">{prompt.title}</h4>
                                             <p className="text-sm text-gray-600">{prompt.description}</p>
                                         </div>
+                                        {/* Rating section */}
                                         <div className="text-center">
                                             <p className="text-sm text-gray-800 font-semibold">Rating</p>
                                             <div className="flex items-center gap-1 text-orange-500">
@@ -202,7 +156,43 @@ const Profile = () => {
                                                     <path
                                                         d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z"/>
                                                 </svg>
-                                                <p className="text-gray-800 font-medium">4.2</p>
+                                                <p className="text-gray-800 font-medium">{prompt.rating || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))
+                            ) : (
+                                <p>No favourite prompts found.</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* My Prompts */}
+                    <div className="w-full sm:w-[500px] lg:w-[500px]">
+                        <h3 className="text-md font-semibold text-gray-800 mb-2">My Prompts</h3>
+                        <div className="flex flex-col gap-6">
+                            {user.prompts.length > 0 ? (
+                                user.prompts.map((prompt) => (
+                                    <Link to={`/prompt/${prompt.id}`} key={prompt.id}
+                                          className="flex items-center gap-4 bg-gray-50 p-6 rounded-lg shadow-lg bg-white hover:bg-gray-100 transition-all">
+                                        <div
+                                            className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">M
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="text-sm font-semibold text-gray-800">{prompt.title}</h4>
+                                            <p className="text-sm text-gray-600">{prompt.description}</p>
+                                        </div>
+                                        {/* Rating section */}
+                                        <div className="text-center">
+                                            <p className="text-sm text-gray-800 font-semibold">Rating</p>
+                                            <div className="flex items-center gap-1 text-orange-500">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5"
+                                                     fill="currentColor"
+                                                     viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z"/>
+                                                </svg>
+                                                <p className="text-gray-800 font-medium">{prompt.rating || 'N/A'}</p>
                                             </div>
                                         </div>
                                     </Link>
@@ -216,6 +206,7 @@ const Profile = () => {
 
 
             </main>
+            <br/>
         </>
     );
 };
