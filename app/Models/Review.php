@@ -9,6 +9,9 @@ class Review extends Model
 {
     use HasFactory;
 
+
+    protected $table = 'prompt_reviews';
+
     protected $fillable = [
         'prompt_id',
         'user_id',
