@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = () => {
     const [emailOrUsername, setEmailOrUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,7 +21,6 @@ const Login = ({ setIsLoggedIn }) => {
             localStorage.setItem('token', response.data.token);
 
             navigate('/home');
-
         } catch (err) {
             setIsLoading(false);
 
@@ -39,49 +37,95 @@ const Login = ({ setIsLoggedIn }) => {
     };
 
     return (
-        <div className="max-w-md mx-auto bg-white p-6 rounded shadow-md">
-            <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                <img
+                    className="mx-auto h-10 w-auto"
+                    src="/images/logo.png"
+                    alt="Your Company"
+                />
+                <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
+                    Sign in to your account
+                </h2>
+            </div>
 
-            {errors && (
-                <div className="text-red-500 text-center mb-4">
-                    {errors.message && <p>{errors.message}</p>}
-                    {errors.email && <p>{errors.email[0]}</p>}
-                    {errors.password && <p>{errors.password[0]}</p>}
-                </div>
-            )}
+            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                {errors && (
+                    <div className="text-red-500 text-center mb-4">
+                        {errors.message && <p>{errors.message}</p>}
+                        {errors.email && <p>{errors.email[0]}</p>}
+                        {errors.password && <p>{errors.password[0]}</p>}
+                    </div>
+                )}
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                    <div>
+                        <label
+                            htmlFor="emailOrUsername"
+                            className="block text-sm font-medium text-gray-900"
+                        >
+                            Email or Username
+                        </label>
+                        <div className="mt-2">
+                            <input
+                                id="emailOrUsername"
+                                name="emailOrUsername"
+                                type="text"
+                                value={emailOrUsername}
+                                onChange={(e) => setEmailOrUsername(e.target.value)}
+                                required
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                            />
+                        </div>
+                    </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-gray-700">Email or Username</label>
-                    <input
-                        type="text"
-                        value={emailOrUsername}
-                        onChange={(e) => setEmailOrUsername(e.target.value)}
-                        className="w-full border border-gray-300 p-2 rounded"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Password</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full border border-gray-300 p-2 rounded"
-                        required
-                    />
-                </div>
-                <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Logging in...' : 'Login'}
-                </button>
-            </form>
-
-            <div className="text-center mt-4">
-                <p>Don't have an account? <Link to="/register" className="text-blue-500 hover:text-blue-700">Register here</Link></p>
+                    <div>
+                        <div className="flex items-center justify-between">
+                            <label
+                                htmlFor="password"
+                                className="block text-sm font-medium text-gray-900"
+                            >
+                                Password
+                            </label>
+                            <div className="text-sm">
+                                <Link
+                                    to="/forgot-password"
+                                    className="font-semibold text-orange-600 hover:text-orange-500"
+                                >
+                                    Forgot password?
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="mt-2">
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <button
+                            type="submit"
+                            className="flex w-full justify-center rounded-md bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Signing in...' : 'Sign in'}
+                        </button>
+                    </div>
+                </form>
+                <p className="mt-10 text-center text-sm text-gray-500">
+                    Don't have an account yet?{' '}
+                    <Link
+                        to="/register"
+                        className="font-semibold text-orange-600 hover:text-orange-500"
+                    >
+                        Register here
+                    </Link>
+                </p>
             </div>
         </div>
     );

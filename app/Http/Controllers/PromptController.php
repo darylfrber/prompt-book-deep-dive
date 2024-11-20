@@ -27,7 +27,9 @@ class PromptController extends Controller
             'tags.*' => 'string|max:50',
         ]);
 
-        $prompt = Prompt::create($validated);
+        $prompt = Prompt::create(array_merge($validated, [
+            'user_id' => auth()->id(),
+        ]));
 
         return response()->json($prompt, 201);
     }
@@ -35,16 +37,20 @@ class PromptController extends Controller
     /**
      * Display the specified prompt.
      */
-    public function show($id)
+    public function show($id): \Illuminate\Http\JsonResponse
     {
-        $prompt = Prompt::find($id);
+        $prompt = Prompt::with(['user', 'reviews.user'])->find($id);
 
         if (!$prompt) {
             return response()->json(['message' => 'Prompt not found'], 404);
         }
 
-        return response()->json($prompt, 200);
+        $prompt->views += 1;
+        $prompt->save();
+
+        return response()->json($prompt->toArray(), 200);
     }
+
 
     /**
      * Update the specified prompt in storage.
