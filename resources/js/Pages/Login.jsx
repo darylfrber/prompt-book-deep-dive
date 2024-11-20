@@ -107,7 +107,6 @@ const Login = ({ setIsLoggedIn }) => {
                             />
                         </div>
                     </div>
-
                     <div>
                         <button
                             type="submit"
