@@ -2,24 +2,21 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-// Dynamisch importeren van alle .tsx en .jsx bestanden in de "Pages"-map
 const pages = import.meta.glob('./Pages/*.{jsx,tsx}', { eager: true });
 
-// Creëer de routes op basis van de bestandsnamen
 const routes = Object.keys(pages).map(filePath => {
-    const fileName = filePath.replace('./Pages/', '').replace(/\.[^/.]+$/, ''); // Verwijder de pad en extensie
-    const routePath = `/${fileName.toLowerCase()}`; // Zorg ervoor dat het pad in kleine letters is
+    const fileName = filePath.replace('./Pages/', '').replace(/\.[^/.]+$/, '');
+    const routePath = `/${fileName.toLowerCase()}`;
 
     return {
-        path: routePath,  // Stel het pad in op basis van de bestandsnaam
-        element: React.createElement(pages[filePath].default),  // Het element is de default export van de pagina
+        path: routePath,
+        element: React.createElement(pages[filePath].default),
     };
 });
 
-// Voeg een route toe voor de homepage die verwijst naar de Home component
 routes.unshift({
     path: '/',
-    element: React.createElement(pages['./Pages/Home.tsx'].default), // Gebruik de Home component voor de root
+    element: React.createElement(pages['./Pages/Home.tsx'].default),
 });
 
 // Voeg een route toe voor /profile zonder naam (404 pagina)
