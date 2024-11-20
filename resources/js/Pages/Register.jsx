@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Register = () => {
@@ -7,6 +8,8 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,7 +23,10 @@ const Register = () => {
                 password_confirmation: passwordConfirmation, // Zorg voor correcte veldnaam
             });
 
+
             console.log('Registration successful:', response.data);
+            navigate('/');
+
         } catch (err) {
             if (err.response && err.response.data) {
                 // API-fouten ophalen en opslaan in de `error` state

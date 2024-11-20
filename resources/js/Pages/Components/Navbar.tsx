@@ -27,7 +27,7 @@ export default function Navbar() {
             {token ? (
                 <div className="flex items-center space-x-4">
                     <Link to="/prompts" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Prompts</Link>
-                    <Link to="/profile" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Profile</Link>
+                    <Link to="/profile/" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Profile</Link>
                     <Link to="/" onClick={() => logout()} className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Logout</Link>
                 </div>
             ) : (
