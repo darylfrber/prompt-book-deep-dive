@@ -53,9 +53,6 @@ class PromptController extends Controller
         $prompt->views += 1;
         $prompt->save();
 
-        // Als de tags opgeslagen zijn als een string, bijvoorbeeld 'development'
-        $prompt->tags = explode(',', $prompt->tags);
-
         return response()->json($prompt->toArray(), 200);
     }
 
