@@ -3,18 +3,35 @@ import { Link } from 'react-router-dom';
 
 export default function Navbar() {
     const [isLogged, setIsLogged] = useState(false);
-    const token = localStorage.getItem('token');
+    const [isUser, setIsUser] = useState(null);
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        setIsLogged(false);
-    };
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
 
     useEffect(() => {
         if (token) {
             setIsLogged(true);
+        } else {
+            setIsLogged(false);
         }
-    });
+
+        if (user) {
+            try {
+                const parsedUser = JSON.parse(user);
+                setIsUser(parsedUser);
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                setIsUser(null);
+            }
+        }
+    }, [token, user]); 
+
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsLogged(false);
+        setIsUser(null);
+    };
 
     return (
         <nav className="flex justify-between items-center p-4 text-black">
@@ -27,7 +44,7 @@ export default function Navbar() {
             {token ? (
                 <div className="flex items-center space-x-4">
                     <Link to="/prompts" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Prompts</Link>
-                    <Link to="/profile/" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Profile</Link>
+                    <Link to={`/profile/${isUser ? isUser.name : ''}`} className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Profile</Link>
                     <Link to="/" onClick={() => logout()} className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Logout</Link>
                 </div>
             ) : (
