@@ -73,12 +73,14 @@ class UserController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        // Genereer het token en retourneer het
+        // Genereer het token en retourneer het samen met het user object
         $token = $user->createToken('AppName')->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return response()->json([
+            'token' => $token,
+            'user' => $user // Voeg het user object toe aan de response
+        ]);
     }
-
 
     /**
      * Log een gebruiker uit.

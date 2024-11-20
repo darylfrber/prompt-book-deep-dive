@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import Navbar from './Components/Navbar';
 
 const SinglePrompt = () => {
     const { id } = useParams(); // Haal de ID uit de URL
@@ -57,6 +58,8 @@ const SinglePrompt = () => {
     }
 
     return (
+        <>
+            <Navbar />
         <main className="flex flex-col items-center gap-6 mt-16">
             <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-3xl">
                 <div className="flex flex-col items-center mb-6">
@@ -207,6 +210,7 @@ const SinglePrompt = () => {
                 </div>
             </div>
         </main>
+        </>
     );
 };
 
