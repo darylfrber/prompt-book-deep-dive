@@ -1,105 +1,168 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
-    const [error, setError] = useState(null);
+    const [errors, setErrors] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null); // Reset errors before new request
+        setErrors(null);
+        setIsLoading(true);
 
         try {
             const response = await axios.post('/api/register', {
-                name,               // Gebruikersnaam
+                name,
                 email,
                 password,
-                password_confirmation: passwordConfirmation, // Zorg voor correcte veldnaam
+                password_confirmation: passwordConfirmation,
             });
 
-            console.log('Registration successful:', response.data);
+            navigate('/login');
+
         } catch (err) {
+            setIsLoading(false);
             if (err.response && err.response.data) {
-                // API-fouten ophalen en opslaan in de `error` state
-                const apiError = err.response.data;
-                setError(apiError);
+                setErrors(err.response.data.errors || { message: err.response.data.message });
             } else {
-                setError({ message: 'An unknown error occurred.' });
+                setErrors({ message: 'An unknown error occurred.' });
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="max-w-md mx-auto bg-white p-6 rounded shadow-md">
-            <h2 className="text-2xl font-bold text-center mb-4">Register</h2>
+        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                <img
+                    className="mx-auto h-10 w-auto"
+                    src="/images/logo.png"
+                    alt="Your Company"
+                />
+                <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
+                    Create your account
+                </h2>
+            </div>
 
-            {/* Toon algemene foutmelding */}
-            {error && error.message && (
-                <p className="text-red-500 text-center mb-4">{error.message}</p>
-            )}
+            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                {errors && (
+                    <div className="text-red-500 text-center mb-4">
+                        {errors.message && <p>{errors.message}</p>}
+                        {errors.name && <p>{errors.name[0]}</p>}
+                        {errors.email && <p>{errors.email[0]}</p>}
+                        {errors.password && <p>{errors.password[0]}</p>}
+                        {errors.password_confirmation && <p>{errors.password_confirmation[0]}</p>}
+                    </div>
+                )}
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                    <div>
+                        <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-gray-900"
+                        >
+                            Name
+                        </label>
+                        <div className="mt-2">
+                            <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                            />
+                        </div>
+                    </div>
 
-            {/* Toon gedetailleerde foutmeldingen */}
-            {error && error.errors && (
-                <ul className="text-red-500 mb-4 list-disc list-inside">
-                    {Object.entries(error.errors).map(([field, messages]) => (
-                        <li key={field}>
-                            <strong>{field}:</strong> {messages.join(', ')}
-                        </li>
-                    ))}
-                </ul>
-            )}
+                    <div>
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-900"
+                        >
+                            Email address
+                        </label>
+                        <div className="mt-2">
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                            />
+                        </div>
+                    </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-gray-700">Name</label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full border border-gray-300 p-2 rounded"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Email</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full border border-gray-300 p-2 rounded"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Password</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full border border-gray-300 p-2 rounded"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Confirm Password</label>
-                    <input
-                        type="password"
-                        value={passwordConfirmation}
-                        onChange={(e) => setPasswordConfirmation(e.target.value)}
-                        className="w-full border border-gray-300 p-2 rounded"
-                        required
-                    />
-                </div>
-                <button
-                    type="submit"
-                    className="w-full bg-orange-500 text-white p-2 rounded hover:bg-orange-600"
-                >
-                    Register
-                </button>
-            </form>
+                    <div>
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-900"
+                        >
+                            Password
+                        </label>
+                        <div className="mt-2">
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="passwordConfirmation"
+                            className="block text-sm font-medium text-gray-900"
+                        >
+                            Confirm Password
+                        </label>
+                        <div className="mt-2">
+                            <input
+                                id="passwordConfirmation"
+                                name="passwordConfirmation"
+                                type="password"
+                                value={passwordConfirmation}
+                                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                required
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            className="flex w-full justify-center rounded-md bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Creating account...' : 'Register'}
+                        </button>
+                    </div>
+                </form>
+                <p className="mt-10 text-center text-sm text-gray-500">
+                    Already have an account?{' '}
+                    <Link
+                        to="/login"
+                        className="font-semibold text-orange-600 hover:text-orange-500"
+                    >
+                        Sign in here
+                    </Link>
+                </p>
+            </div>
+
         </div>
     );
 };
