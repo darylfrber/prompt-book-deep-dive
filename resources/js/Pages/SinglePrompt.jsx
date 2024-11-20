@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import Navbar from './Components/Navbar';
 
 const SinglePrompt = () => {
     const { id } = useParams(); // Haal de ID uit de URL
@@ -57,6 +58,8 @@ const SinglePrompt = () => {
     }
 
     return (
+        <>
+            <Navbar />
         <main className="flex flex-col items-center gap-6 mt-16">
             <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-3xl">
                 <div className="flex flex-col items-center mb-6">
@@ -197,7 +200,7 @@ const SinglePrompt = () => {
                                         <h4 className="font-semibold text-gray-800">{review.user.name}</h4>
                                         <p className="ml-2 text-sm text-gray-500">Rating: {review.rating}</p>
                                     </div>
-                                    <p className="text-gray-600">{review.comment}</p>
+                                    <p className="text-gray-600">{review.review}</p>
                                 </div>
                             ))
                         ) : (
@@ -207,6 +210,7 @@ const SinglePrompt = () => {
                 </div>
             </div>
         </main>
+        </>
     );
 };
 

@@ -16,7 +16,7 @@ class Prompt extends Model
         'views',
         'favorites',
         'average_rating',
-        'user_id', // Koppeling aan de gebruiker
+        'user_id',
     ];
 
     protected $casts = [
@@ -32,4 +32,5 @@ class Prompt extends Model
     {
         return $this->hasMany(Review::class);
     }
+
 }
