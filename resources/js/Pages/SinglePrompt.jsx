@@ -200,7 +200,7 @@ const SinglePrompt = () => {
                                         <h4 className="font-semibold text-gray-800">{review.user.name}</h4>
                                         <p className="ml-2 text-sm text-gray-500">Rating: {review.rating}</p>
                                     </div>
-                                    <p className="text-gray-600">{review.comment}</p>
+                                    <p className="text-gray-600">{review.review}</p>
                                 </div>
                             ))
                         ) : (

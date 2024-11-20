@@ -49,8 +49,8 @@ export default function Navbar() {
                 </div>
             ) : (
                 <div className="flex items-center space-x-4">
-                    <Link to="/login" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Login</Link>
-                    <Link to="/register" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Register</Link>
+                    <Link to="/login" className="bg-orange-500 hover:bg-orange-300 text-white font-bold py-2 px-4 border-b-4 border-orange-700 hover:border-orange-500 rounded">Login</Link>
+                    <Link to="/register" className="bg-orange-500 hover:bg-orange-300 text-white font-bold py-2 px-4 border-b-4 border-orange-700 hover:border-orange-500 rounded">Register</Link>
                 </div>
             )}
 
