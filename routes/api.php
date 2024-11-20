@@ -10,8 +10,9 @@ Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
 // Public routes (zichtbaar voor iedereen)
-Route::get('/prompts', [PromptController::class, 'index']);
 Route::get('/prompts/{id}', [PromptController::class, 'show']);
+Route::get('/prompts', [PromptController::class, 'index']);
+
 
 Route::get('/user/{name}', [UserController::class, 'getUserInfo']);
 
