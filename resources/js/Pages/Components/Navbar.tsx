@@ -26,14 +26,14 @@ export default function Navbar() {
             </Link>
             {token ? (
                 <div className="flex items-center space-x-4">
-                    <Link to="/prompts" className="text-lg font-semibold">Prompts</Link>
-                    <Link to="/profile" className="text-lg font-semibold">Profile</Link>
-                    <Link to="/" onClick={() => logout()} className="text-lg font-semibold">Logout</Link>
+                    <Link to="/prompts" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Prompts</Link>
+                    <Link to="/profile" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Profile</Link>
+                    <Link to="/" onClick={() => logout()} className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Logout</Link>
                 </div>
             ) : (
                 <div className="flex items-center space-x-4">
-                    <Link to="/login" className="text-lg font-semibold">Login</Link>
-                    <Link to="/register" className="text-lg font-semibold">Register</Link>
+                    <Link to="/login" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Login</Link>
+                    <Link to="/register" className="bg-orange-400 text-lg font-semibold p-2 rounded-lg pl-4 pr-4">Register</Link>
                 </div>
             )}
 
