@@ -17,11 +17,8 @@ const Login = () => {
 
         try {
             const response = await axios.post('/api/login', { email_or_username: emailOrUsername, password });
-
-            console.log("Login response:", response);
             localStorage.setItem('token', response.data.token);
-
-            // navigate('/home');
+            navigate('/');
         } catch (err) {
             setIsLoading(false);
 

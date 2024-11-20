@@ -119,9 +119,6 @@ class UserController extends Controller
         $user->followers_count = $followersCount;
         $user->following_count = $followingCount;
 
-        // Haal de prompts op
-        $prompts = $user->prompts;
-
         return response()->json([
             'user' => $user,
         ], 200);

@@ -3,6 +3,7 @@
 import { Badge, Button, Card } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { HiCheck } from "react-icons/hi";
+import {Link} from "react-router-dom";
 
 export function MessageCard() {
     const [prompts, setPrompt] = useState([]);
@@ -27,9 +28,9 @@ export function MessageCard() {
         prompts.map((prompt) => (
             <div className="p-6">
                 <Card className="max-w-sm">
-                    <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    <Link to={`/prompt/${prompt.id}`} className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                         {prompt.title}
-                    </h5>
+                    </Link>
                     <p className="font-normal text-gray-700 dark:text-gray-400">
                         {prompt.description}
                     </p>
