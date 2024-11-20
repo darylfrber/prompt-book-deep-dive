@@ -61,24 +61,45 @@ const SinglePrompt = () => {
                             <p className="text-gray-800 font-medium">4.8</p>
                         </div>
                     </div>
+
+                    {/* Favourites section */}
                     <div className="text-center">
-                        <h3 className="text-lg font-semibold text-gray-800">Tags</h3>
-                        <p className="text-gray-600 font-semibold">
-                            {prompt.tags ? prompt.tags.join(', ') : 'No tags'}
-                        </p>
+                        <h3 className="text-lg font-semibold text-gray-800">Favourites</h3>
+                        <p className="text-gray-600 font-semibold">{prompt.favourites} Favourites</p>
                     </div>
+
+                    {/* Views section */}
                     <div className="text-center">
                         <h3 className="text-lg font-semibold text-gray-800">Views</h3>
-                        <p className="text-gray-600 font-semibold">453 views</p>
+                        <p className="text-gray-600 font-semibold">{prompt.views} views</p>
+                    </div>
+                </div>
+
+                {/* Tags */}
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                        {prompt.tags && prompt.tags.length > 0 ? (
+                            prompt.tags.map((tag, index) => (
+                                <span
+                                    key={index}
+                                    className="px-4 py-2 text-sm bg-blue-100 text-blue-800 rounded-full"
+                                >
+                                    {tag}
+                                </span>
+                            ))
+                        ) : (
+                            <p className="text-gray-600">No tags available</p>
+                        )}
                     </div>
                 </div>
 
                 <div className="flex justify-between items-center mb-6">
                     <Link
-                        to={`/profile/${prompt.user_id}`}
+                        to={`/profile/${prompt.user.name}`}
                         className="text-orange-500 font-semibold hover:underline"
                     >
-                        Author: User {prompt.user_id}
+                        Author: @{prompt.user.name}
                     </Link>
                     <button
                         className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 focus:outline-none"
@@ -87,11 +108,24 @@ const SinglePrompt = () => {
                     </button>
                 </div>
 
+                {/* Reviews section */}
                 <div className="mt-8">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Reviews</h3>
                     <div className="space-y-6">
-                        {/* Hier kun je dynamisch reviews tonen */}
-                        <p className="text-gray-600 text-center">No reviews available.</p>
+                        {/* Dynamisch reviews tonen */}
+                        {prompt.reviews && prompt.reviews.length > 0 ? (
+                            prompt.reviews.map((review, index) => (
+                                <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-md">
+                                    <div className="flex items-center mb-2">
+                                        <h4 className="font-semibold text-gray-800">{review.user.name}</h4>
+                                        <p className="ml-2 text-sm text-gray-500">Rating: {review.rating}</p>
+                                    </div>
+                                    <p className="text-gray-600">{review.comment}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-600 text-center">No reviews available.</p>
+                        )}
                     </div>
                 </div>
             </div>

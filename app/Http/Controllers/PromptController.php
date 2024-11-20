@@ -45,6 +45,9 @@ class PromptController extends Controller
             return response()->json(['message' => 'Prompt not found'], 404);
         }
 
+        $prompt->views += 1;
+        $prompt->save();
+
         return response()->json($prompt->toArray(), 200);
     }
 
