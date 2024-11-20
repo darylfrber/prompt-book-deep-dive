@@ -11,6 +11,7 @@ const Register = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors(null);
@@ -24,7 +25,9 @@ const Register = () => {
                 password_confirmation: passwordConfirmation,
             });
 
-            navigate('/login');
+
+            console.log('Registration successful:', response.data);
+            navigate('/');
 
         } catch (err) {
             setIsLoading(false);
