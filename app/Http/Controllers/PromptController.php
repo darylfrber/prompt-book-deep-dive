@@ -37,16 +37,17 @@ class PromptController extends Controller
     /**
      * Display the specified prompt.
      */
-    public function show($id)
+    public function show($id): \Illuminate\Http\JsonResponse
     {
-        $prompt = Prompt::find($id);
+        $prompt = Prompt::with(['user', 'reviews.user'])->find($id);
 
         if (!$prompt) {
             return response()->json(['message' => 'Prompt not found'], 404);
         }
 
-        return response()->json($prompt, 200);
+        return response()->json($prompt->toArray(), 200);
     }
+
 
     /**
      * Update the specified prompt in storage.

@@ -31,6 +31,12 @@ routes.push({
     element: React.createElement(pages['./Pages/Profile.jsx'].default), // Profile component
 });
 
+// Voeg de dynamische profielroute toe
+routes.push({
+    path: '/prompt/:id', // Dynamische route voor profiel
+    element: React.createElement(pages['./Pages/SinglePrompt.jsx'].default), // Profile component
+});
+
 // Voeg een route toe voor 404 als een pagina niet bestaat
 routes.push({
     path: '*', // Dit vangt alle onbekende routes
