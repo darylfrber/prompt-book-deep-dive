@@ -3,7 +3,7 @@
 import { Badge, Button, Card } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { HiCheck } from "react-icons/hi";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export function MessageCard() {
     const [prompts, setPrompt] = useState([]);
@@ -12,8 +12,8 @@ export function MessageCard() {
         const fetchData = async () => {
             try {
                 const response = await fetch("/api/prompts");
-                const promtData = await response.json();
-                setPrompt(promtData);
+                const promptData = await response.json();
+                setPrompt(promptData);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -26,7 +26,7 @@ export function MessageCard() {
 
     return (
         prompts.map((prompt) => (
-            <div className="p-6">
+            <div className="p-6" key={prompt.id}>
                 <Card className="max-w-sm">
                     <Link to={`/prompt/${prompt.id}`} className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                         {prompt.title}
@@ -35,7 +35,16 @@ export function MessageCard() {
                         {prompt.description}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                        <Badge icon={HiCheck}>Test</Badge>
+                        {/* Check if tags exist and map over them */}
+                        {prompt.tags && Array.isArray(prompt.tags) && prompt.tags.length > 0 ? (
+                            prompt.tags.map((tag, index) => (
+                                <Badge key={index} icon={HiCheck}>
+                                    {tag}
+                                </Badge>
+                            ))
+                        ) : (
+                            <Badge icon={HiCheck}>No tags</Badge>
+                        )}
                     </div>
                     <Button>
                         Read more

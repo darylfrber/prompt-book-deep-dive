@@ -115,9 +115,13 @@ class UserController extends Controller
         $followersCount = $user->followers()->count(); // Aantal volgers
         $followingCount = $user->following()->count(); // Aantal mensen die deze gebruiker volgt
 
-        // Voeg de aantallen toe aan de gebruiker
+        // Haal de prompts op die de gebruiker heeft aangemaakt
+        $userPrompts = $user->prompts()->get();  // Veronderstel dat de relatie 'prompts' bestaat
+
+        // Voeg de aantallen en prompts toe aan de gebruiker
         $user->followers_count = $followersCount;
         $user->following_count = $followingCount;
+        $user->prompts = $userPrompts;  // Voeg de prompts toe aan de user
 
         return response()->json([
             'user' => $user,

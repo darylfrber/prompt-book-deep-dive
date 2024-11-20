@@ -20,19 +20,24 @@ class PromptController extends Controller
      */
     public function store(Request $request)
     {
+        // Valideer de input
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50',
+            'tags' => 'nullable|array', // Tags moet een array zijn (of null)
+            'tags.*' => 'string|max:50', // Elke tag moet een string zijn
         ]);
+
+        $validated['tags'] = $validated['tags'] ?? []; // Als geen tags opgegeven zijn, maak er een lege array van
 
         $prompt = Prompt::create(array_merge($validated, [
             'user_id' => auth()->id(),
         ]));
 
+        // Geef de aangemaakte prompt terug als JSON-response
         return response()->json($prompt, 201);
     }
+
 
     /**
      * Display the specified prompt.
@@ -48,8 +53,42 @@ class PromptController extends Controller
         $prompt->views += 1;
         $prompt->save();
 
+        // Als de tags opgeslagen zijn als een string, bijvoorbeeld 'development'
+        $prompt->tags = explode(',', $prompt->tags);
+
         return response()->json($prompt->toArray(), 200);
     }
+
+
+    public function updateFavourite($id)
+    {
+        $prompt = Prompt::findOrFail($id);
+        $user = auth()->user(); // Haal de ingelogde gebruiker op
+
+        // Zorg ervoor dat de favourites kolom een array is, zelfs als het null is
+        $favourites = $user->favourites ?? [];
+
+        // Controleer of de gebruiker de prompt al als favoriet heeft
+        if (in_array($prompt->id, $favourites)) {
+            // Als de prompt al favoriet is, haal hem dan weg
+            $favourites = array_diff($favourites, [$prompt->id]); // Verwijder de prompt uit de favourieten
+            $user->favourites = $favourites;
+            $prompt->favourites -= 1; // Verminder het aantal favorieten
+            $prompt->save();
+            $user->save(); // Bewaar de gewijzigde favourites
+            return response()->json(['message' => 'Prompt unfavourited successfully']);
+        }
+
+        // Voeg de prompt toe aan de favorieten
+        $favourites[] = $prompt->id; // Voeg de prompt toe aan de lijst
+        $user->favourites = $favourites;
+        $prompt->favourites += 1; // Verhoog het aantal favorieten
+        $prompt->save();
+        $user->save(); // Bewaar de gewijzigde favourites
+        return response()->json(['message' => 'Prompt favourited successfully']);
+    }
+
+
 
 
     /**

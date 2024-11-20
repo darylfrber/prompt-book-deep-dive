@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/prompts', [PromptController::class, 'store']);      // Prompt aanmaken
     Route::put('/prompts/{id}', [PromptController::class, 'update']); // Prompt updaten
     Route::delete('/prompts/{id}', [PromptController::class, 'destroy']); // Prompt verwijderen
+    Route::post('/prompts/{id}/favourite', [PromptController::class, 'updateFavourite']); // Prompt verwijderen
 
     // Reviews routes (zoals eerder gedefinieerd)
     Route::post('/prompts/{promptId}/reviews', [ReviewController::class, 'store']);   // Aanmaken review
