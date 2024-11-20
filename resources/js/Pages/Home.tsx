@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Components/Navbar';
 import { log } from 'console';
+import {Link} from "react-router-dom";
 
 export default function Home() {
 
@@ -65,11 +66,11 @@ export default function Home() {
     )
 };
 
-const TrendingPrompt = ({ title, description }) => (
-    <div className="p-4 bg-gradient-to-r from-orange-200 to-orange-400 rounded-md shadow-sm hover:shadow-md transition duration-200">
+const TrendingPrompt = ({ id, title, description }) => (
+    <Link to={`/prompt/${id}`} className="p-4 bg-gradient-to-r from-orange-200 to-orange-400 rounded-md shadow-sm hover:shadow-md transition duration-200">
         <h3 className="text-center text-lg font-bold text-gray-800">{title}</h3>
         <p className="text-center text-sm text-gray-600 mt-2">{description}</p>
-    </div>
+    </Link>
 );
 
 function Footer({ prompts }) {
@@ -80,11 +81,13 @@ function Footer({ prompts }) {
                 <div className="mx-auto mt-10 grid max-w-lg grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-10 sm:max-w-xl lg:mx-0 lg:max-w-none">
                     {prompts.map((prompt) => (
                         <TrendingPrompt
-                            key={prompt?.id}
-                            title={prompt?.title}
-                            description={`Description or details about ${prompt?.description}.`}
+                            key={prompt.id}
+                            id={prompt.id}
+                            title={prompt.title}
+                            description={`Description or details about ${prompt.description}.`}
                         />
                     ))}
+
                 </div>
             </div>
         </div>

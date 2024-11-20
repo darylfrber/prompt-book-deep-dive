@@ -51,6 +51,36 @@ class PromptController extends Controller
         return response()->json($prompt->toArray(), 200);
     }
 
+    public function updateFavourite($id)
+    {
+        $prompt = Prompt::findOrFail($id);
+        $user = auth()->user(); // Haal de ingelogde gebruiker op
+
+        // Zorg ervoor dat de favourites kolom een array is, zelfs als het null is
+        $favourites = $user->favourites ?? [];
+
+        // Controleer of de gebruiker de prompt al als favoriet heeft
+        if (in_array($prompt->id, $favourites)) {
+            // Als de prompt al favoriet is, haal hem dan weg
+            $favourites = array_diff($favourites, [$prompt->id]); // Verwijder de prompt uit de favourieten
+            $user->favourites = $favourites;
+            $prompt->favourites -= 1; // Verminder het aantal favorieten
+            $prompt->save();
+            $user->save(); // Bewaar de gewijzigde favourites
+            return response()->json(['message' => 'Prompt unfavourited successfully']);
+        }
+
+        // Voeg de prompt toe aan de favorieten
+        $favourites[] = $prompt->id; // Voeg de prompt toe aan de lijst
+        $user->favourites = $favourites;
+        $prompt->favourites += 1; // Verhoog het aantal favorieten
+        $prompt->save();
+        $user->save(); // Bewaar de gewijzigde favourites
+        return response()->json(['message' => 'Prompt favourited successfully']);
+    }
+
+
+
 
     /**
      * Update the specified prompt in storage.
