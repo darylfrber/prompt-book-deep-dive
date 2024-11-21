@@ -67,6 +67,9 @@ export function Inputfield() {
             const data = await response.json();
             fetchData();
             console.log("Prompt created successfully:", data);
+            setTitle("");
+            setDescription("");
+            setTags([]);
         } catch (error: any) {
             console.error("Error creating prompt:", error);
             alert(`Error: ${error.message}`);

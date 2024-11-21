@@ -21,9 +21,9 @@ export function MessageCard({ prompts }) {
                     <div className="flex flex-wrap gap-2">
                         {prompt.tags && prompt.tags.map((tag, index) => {
                             return (
-                                <Badge icon={HiCheck} key={index} color="primary" className="text-white">
-                                    {tag}
-                                </Badge>
+                                <div class="flex flex-wrap justify-center gap-3">
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full shadow-sm hover:bg-blue-200 transition-colors">Lovethem</span>
+                                </div>
                             );
                         })}
                     </div>
