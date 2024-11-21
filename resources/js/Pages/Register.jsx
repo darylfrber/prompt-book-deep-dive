@@ -26,7 +26,6 @@ const Register = () => {
             });
 
 
-            console.log('Registration successful:', response.data);
             navigate('/');
 
         } catch (err) {

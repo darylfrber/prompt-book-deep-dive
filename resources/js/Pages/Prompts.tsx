@@ -1,6 +1,6 @@
 import React from "react";
-import Inputfield from "./Components/Inputfield";
 import { MessageCard } from "./Components/Userpromts";
+import { Inputfield } from "./Components/Inputfield";
 import Navbar from "./Components/Navbar";
 
 const Promt = () => {
