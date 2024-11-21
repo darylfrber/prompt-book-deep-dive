@@ -103,10 +103,15 @@ const SinglePrompt = () => {
 
 
     const handleReviewSubmit = (e) => {
-        e.preventDefault();
-        setSubmitted(true);
-        setReviewText("");
-        setReviewRating(0);
+        const token = localStorage.getItem("token");
+        if (token) {
+            e.preventDefault();
+            setSubmitted(true);
+            setReviewText("");
+            setReviewRating(0);
+        } else {
+            alert("You must be logged in to leave a review.");
+        }
     };
 
     if (loading) {
@@ -170,7 +175,7 @@ const SinglePrompt = () => {
                     {/* Favorieten-knop */}
                     <div className="flex justify-between items-center mb-6">
                         <Link to={`/profile/${prompt.user.name}`}
-                              className="text-orange-500 font-semibold hover:underline">
+                            className="text-orange-500 font-semibold hover:underline">
                             Author: @{prompt.user.name}
                         </Link>
                         <button
@@ -192,8 +197,8 @@ const SinglePrompt = () => {
                                         key={index}
                                         className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full shadow-sm hover:bg-blue-200 transition-colors"
                                     >
-                    {tag}
-                </span>
+                                        {tag}
+                                    </span>
                                 ))
                             ) : (
                                 <p className="text-gray-600 text-sm">No tags available.</p>
@@ -206,13 +211,13 @@ const SinglePrompt = () => {
                     <div className="mt-8">
                         <h3 className="text-lg font-semibold text-gray-800 mb-4">Leave a Review</h3>
                         <form onSubmit={handleReviewSubmit} className="space-y-4">
-                        <textarea
-                            value={reviewText}
-                            onChange={(e) => setReviewText(e.target.value)}
-                            rows="4"
-                            className="w-full p-3 border border-gray-300 rounded-lg"
-                            placeholder="Write your review..."
-                        />
+                            <textarea
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                                rows="4"
+                                className="w-full p-3 border border-gray-300 rounded-lg"
+                                placeholder="Write your review..."
+                            />
                             <div className="flex justify-center gap-2">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <svg
