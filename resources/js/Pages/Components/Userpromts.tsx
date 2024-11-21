@@ -4,23 +4,9 @@ import { Badge, Button, Card } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { HiCheck } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import { Inputfield } from "./Inputfield";
 
-export function MessageCard() {
-    const [prompts, setPrompt] = useState([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch("/api/prompts");
-                const promptData = await response.json();
-                setPrompt(promptData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData();
-    }, []);
+export function MessageCard({ prompts }) {
 
     return (
         prompts.map((prompt) => (
@@ -33,16 +19,13 @@ export function MessageCard() {
                         {prompt.description}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                        {/* Check if tags exist and map over them */}
-                        {prompt.tags && Array.isArray(prompt.tags) && prompt.tags.length > 0 ? (
-                            prompt.tags.map((tag, index) => (
-                                <Badge key={index} icon={HiCheck}>
+                        {prompt.tags && prompt.tags.map((tag, index) => {
+                            return (
+                                <Badge icon={HiCheck} key={index} color="primary" className="text-white">
                                     {tag}
                                 </Badge>
-                            ))
-                        ) : (
-                            <Badge icon={HiCheck}>No tags</Badge>
-                        )}
+                            );
+                        })}
                     </div>
                 </Card>
             </div>

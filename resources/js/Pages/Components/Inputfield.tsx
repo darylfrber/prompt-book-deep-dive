@@ -1,14 +1,16 @@
 "use client";
 
 import { Button, Label, Modal, TextInput } from "flowbite-react";
-import React, { useState, KeyboardEvent } from "react";
+import React, { useState, KeyboardEvent, useEffect } from "react";
+import { MessageCard } from "./Userpromts";
 
 export function Inputfield() {
-    const [openModal, setOpenModal] = useState(true);
+    const [openModal, setOpenModal] = useState(false);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [tags, setTags] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
+    const [prompt, setPrompt] = useState([]);
 
     const onCloseModal = () => {
         setOpenModal(false);
@@ -63,6 +65,7 @@ export function Inputfield() {
             }
 
             const data = await response.json();
+            fetchData();
             console.log("Prompt created successfully:", data);
         } catch (error: any) {
             console.error("Error creating prompt:", error);
@@ -70,9 +73,24 @@ export function Inputfield() {
         }
     };
 
+    const fetchData = async () => {
+        try {
+            const response = await fetch("/api/prompts");
+            const promptData = await response.json();
+            setPrompt(promptData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
 
     return (
         <>
+            <MessageCard prompts={prompt} />
             <Button onClick={() => setOpenModal(true)}>Create Prompt</Button>
             <Modal show={openModal} size="md" onClose={onCloseModal} popup>
                 <Modal.Header />
