@@ -97,34 +97,35 @@ class UserController extends Controller
 
     public function getUserInfo($name): JsonResponse
     {
-        // Haal de gebruiker op via de naam (case-insensitief)
         $user = User::whereRaw('LOWER(name) = ?', [strtolower($name)])->first();
 
-        // Controleer of de gebruiker bestaat
         if (!$user) {
             return response()->json([
                 'message' => 'User not found.',
             ], 404);
         }
 
-        // Verhoog de page_counter met 1
-        $user->page_counter = $user->page_counter + 1;
-        $user->save();  // Sla de wijziging op
+        $user->page_counter += 1;
+        $user->save();
 
-        // Haal de aantallen followers en following op
-        $followersCount = $user->followers()->count(); // Aantal volgers
-        $followingCount = $user->following()->count(); // Aantal mensen die deze gebruiker volgt
+        // Aantal volgers en de volledige lijst van volgers
+        $followers = $user->followers()
+            ->select('users.id', 'users.name', 'user_follows.followed_id as pivot_followed_id', 'user_follows.follower_id as pivot_follower_id')
+            ->get();
 
-        // Haal de prompts op die de gebruiker heeft aangemaakt
-        $userPrompts = $user->prompts()->get();  // Veronderstel dat de relatie 'prompts' bestaat
+        $followersCount = $followers->count();
 
-        // Voeg de aantallen en prompts toe aan de gebruiker
+        $followingCount = $user->following()->count();
+        $userPrompts = $user->prompts()->get();
+
         $user->followers_count = $followersCount;
         $user->following_count = $followingCount;
-        $user->prompts = $userPrompts;  // Voeg de prompts toe aan de user
+        $user->followers = $followers; // Volgers-lijst toevoegen
+        $user->prompts = $userPrompts;
 
         return response()->json([
             'user' => $user,
         ], 200);
     }
+
 }
