@@ -39,10 +39,16 @@ export function Inputfield() {
 
     const Createprompt = async () => {
         try {
+            const token = localStorage.getItem("token"); // Haal het token op uit localStorage
+            if (!token) {
+                throw new Error("User is not authenticated. Please log in.");
+            }
+
             const response = await fetch("/api/prompts", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     title,
@@ -58,11 +64,12 @@ export function Inputfield() {
 
             const data = await response.json();
             console.log("Prompt created successfully:", data);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating prompt:", error);
             alert(`Error: ${error.message}`);
         }
     };
+
 
     return (
         <>
