@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Components/Navbar';
-import { log } from 'console';
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Home() {
 
@@ -79,14 +78,16 @@ function Footer({ prompts }) {
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <h2 className="text-center text-lg font-semibold text-gray-900">Trending Prompts</h2>
                 <div className="mx-auto mt-10 grid max-w-lg grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-10 sm:max-w-xl lg:mx-0 lg:max-w-none">
-                    {prompts.map((prompt) => (
-                        <TrendingPrompt
-                            key={prompt.id}
-                            id={prompt.id}
-                            title={prompt.title}
-                            description={`Description or details about ${prompt.description}.`}
-                        />
-                    ))}
+                    {prompts
+                        .slice(-5) // Get the last 5 prompts
+                        .map((prompt) => (
+                            <TrendingPrompt
+                                key={prompt.id}
+                                id={prompt.id}
+                                title={prompt.title}
+                                description={`Description or details about ${prompt.description}.`}
+                            />
+                        ))}
 
                 </div>
             </div>
