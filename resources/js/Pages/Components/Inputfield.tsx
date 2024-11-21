@@ -5,7 +5,7 @@ import React, { useState, KeyboardEvent } from "react";
 
 export function Inputfield() {
     const [openModal, setOpenModal] = useState(true);
-    const [titel, setTitel] = useState("");
+    const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [tags, setTags] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
@@ -15,7 +15,7 @@ export function Inputfield() {
     };
 
     const handleTitelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitel(e.target.value);
+        setTitle(e.target.value);
     };
 
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,18 +38,31 @@ export function Inputfield() {
     };
 
     const Createprompt = async () => {
-        await fetch("/api/prompts", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                titel,
-                description,
-                tags,
-            }),
-        });
-    }
+        try {
+            const response = await fetch("/api/prompts", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    tags,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to create the prompt");
+            }
+
+            const data = await response.json();
+            console.log("Prompt created successfully:", data);
+        } catch (error) {
+            console.error("Error creating prompt:", error);
+            alert(`Error: ${error.message}`);
+        }
+    };
 
     return (
         <>
@@ -66,7 +79,7 @@ export function Inputfield() {
                             <TextInput
                                 id="Titel"
                                 placeholder="Type your title here"
-                                value={titel}
+                                value={title}
                                 onChange={handleTitelChange}
                                 required
                             />
