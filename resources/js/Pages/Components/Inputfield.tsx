@@ -5,7 +5,7 @@ import React, { useState, KeyboardEvent, useEffect } from "react";
 import { MessageCard } from "./Userpromts";
 
 export function Inputfield() {
-    const [openModal, setOpenModal] = useState(false);
+    const [openModal, setOpenModal] = useState(true);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [tags, setTags] = useState<string[]>([]);
@@ -40,39 +40,44 @@ export function Inputfield() {
     };
 
     const Createprompt = async () => {
-        try {
-            const token = localStorage.getItem("token"); // Haal het token op uit localStorage
-            if (!token) {
-                throw new Error("User is not authenticated. Please log in.");
+        if (tags.length > 0) {
+            try {
+                const token = localStorage.getItem("token"); // Haal het token op uit localStorage
+                if (!token) {
+                    throw new Error("User is not authenticated. Please log in.");
+                }
+
+                const response = await fetch("/api/prompts", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        tags,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Failed to create the prompt");
+                }
+
+                const data = await response.json();
+                setOpenModal(false);
+                fetchData();
+                console.log("Prompt created successfully:", data);
+                setTitle("");
+                setDescription("");
+                setTags([]);
+            } catch (error: any) {
+                console.error("Error creating prompt:", error);
+                alert(`Error: ${error.message}`);
             }
-
-            const response = await fetch("/api/prompts", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    title,
-                    description,
-                    tags,
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to create the prompt");
-            }
-
-            const data = await response.json();
-            fetchData();
-            console.log("Prompt created successfully:", data);
-            setTitle("");
-            setDescription("");
-            setTags([]);
-        } catch (error: any) {
-            console.error("Error creating prompt:", error);
-            alert(`Error: ${error.message}`);
+        } else {
+            alert("Please fill in all the fields");
         }
     };
 
@@ -93,47 +98,57 @@ export function Inputfield() {
 
     return (
         <>
-            <MessageCard prompts={prompt} />
-            <Button onClick={() => setOpenModal(true)}>Create Prompt</Button>
-            <Modal show={openModal} size="md" onClose={onCloseModal} popup>
-                <Modal.Header />
-                <Modal.Body>
+            <div className="flex justify-center mt-4">
+                <button
+                    className="bg-orange-500 hover:bg-orange-300 text-white p-3 rounded-lg"
+                    onClick={() => setOpenModal(true)}
+                >
+                    Create Prompt
+                </button>
+            </div>
+            <Modal className="bg-neutral-700" show={openModal} size="md" onClose={onCloseModal} popup>
+                <Modal.Header className="bg-neutral-800" />
+                <Modal.Body className="bg-neutral-800">
                     <div className="space-y-6">
-                        <h3 className="text-xl font-medium text-gray-900 dark:text-white">Create your own prompt</h3>
+                        <h3 className="text-xl font-medium text-white">Create your own prompt</h3>
                         <div>
                             <div className="mb-2 block">
                                 <Label htmlFor="Titel" value="Titel" />
                             </div>
-                            <TextInput
+                            <input
                                 id="Titel"
                                 placeholder="Type your title here"
                                 value={title}
                                 onChange={handleTitelChange}
                                 required
+                                className="w-full px-4 py-2 bg-neutral-200 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                         <div>
                             <div className="mb-2 block">
                                 <Label htmlFor="description" value="Description" />
                             </div>
-                            <TextInput
+                            <input
                                 id="Description"
                                 placeholder="Type your description here"
                                 value={description}
                                 onChange={handleDescriptionChange}
                                 required
+                                className="w-full px-4 py-2 bg-neutral-200 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                         <div>
                             <div className="mb-2 block">
                                 <Label htmlFor="tags" value="Tags" />
                             </div>
-                            <TextInput
+                            <input
                                 id="Tags"
                                 value={inputValue}
                                 onChange={handleInputChange}
                                 onKeyPress={handleKeyPress}
                                 placeholder="Type a tag and press Enter"
+                                required
+                                className="w-full px-4 py-2 bg-neutral-200 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {tags.map((tag, index) => (
@@ -153,14 +168,14 @@ export function Inputfield() {
                             </div>
                         </div>
                         <div className="w-full">
-                            <Button onClick={() => {
+                            <button className="bg-orange-500 hover:bg-orange-300 text-white p-3 rounded-lg" onClick={() => {
                                 Createprompt();
-                                setOpenModal(false);
-                            }}>Create your prompt</Button>
+                            }}>Create your prompt</button>
                         </div>
                     </div>
                 </Modal.Body>
             </Modal>
+            <MessageCard prompts={prompt} />
         </>
     );
 }
