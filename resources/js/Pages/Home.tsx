@@ -80,6 +80,7 @@ function Footer({ prompts }) {
                 <div className="mx-auto mt-10 grid max-w-lg grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-10 sm:max-w-xl lg:mx-0 lg:max-w-none">
                     {prompts
                         .slice(-5) // Get the last 5 prompts
+                        .reverse()
                         .map((prompt) => (
                             <TrendingPrompt
                                 key={prompt.id}
