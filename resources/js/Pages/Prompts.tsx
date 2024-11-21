@@ -7,7 +7,6 @@ const Promt = () => {
     return (
         <>
             <Navbar />
-            <MessageCard />
             <Inputfield />
         </>
     );
