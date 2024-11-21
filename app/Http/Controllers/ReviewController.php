@@ -21,11 +21,14 @@ class ReviewController extends Controller
 
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string',
+            'review' => 'nullable|string',
         ]);
 
         // Controleer of de gebruiker al een review heeft
-        $existingReview = Review::where('prompt_id', $promptId)->where('user_id', auth()->id())->first();
+        $existingReview = Review::where('prompt_id', $promptId)
+            ->where('user_id', auth()->id())
+            ->first();
+
         if ($existingReview) {
             return response()->json(['message' => 'You have already reviewed this prompt'], 400);
         }
@@ -33,15 +36,20 @@ class ReviewController extends Controller
         $review = $prompt->reviews()->create([
             'user_id' => auth()->id(),
             'rating' => $validated['rating'],
-            'comment' => $validated['comment'] ?? null,
+            'review' => $validated['review'] ?? null,
         ]);
 
         // Update gemiddelde beoordeling
         $prompt->average_rating = $prompt->reviews()->avg('rating');
         $prompt->save();
 
-        return response()->json($review, 201);
+        return response()->json([
+            'message' => 'Review successfully created!',
+            'review' => $review,
+            'average_rating' => $prompt->average_rating,
+        ], 201);
     }
+
 
     /**
      * Werk een bestaande review bij.
