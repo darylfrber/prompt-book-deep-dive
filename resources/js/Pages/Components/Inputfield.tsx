@@ -5,7 +5,7 @@ import React, { useState, KeyboardEvent, useEffect } from "react";
 import { MessageCard } from "./Userpromts";
 
 export function Inputfield() {
-    const [openModal, setOpenModal] = useState(true);
+    const [openModal, setOpenModal] = useState(false);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [tags, setTags] = useState<string[]>([]);
