@@ -8,35 +8,105 @@ const Profile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isFollowing, setIsFollowing] = useState(false);
     const [favouritePrompts, setFavouritePrompts] = useState([]);
 
-    const hasFetched = useRef(false);
+    const hasFetched = useRef(false); // Dit voorkomt dubbele fetch-aanroepen
 
     useEffect(() => {
-        if (hasFetched.current) return;
-
         const fetchUserData = async () => {
+            if (hasFetched.current) return; // Alleen ophalen als er nog niet is opgehaald
+
             try {
                 const response = await axios.get(`/api/user/${name}`);
-                setUser(response.data.user);
+                const userData = response.data.user;
 
-                // Haal de favoriete prompts van de gebruiker op
-                const favPrompts = response.data.user.favourites;
-                const prompts = response.data.user.prompts;
+                setUser(userData);
+                setFavouritePrompts(userData.favourite_prompts); // Zet de favoriete prompts direct
 
-                // Filter de prompts die als favorieten zijn gemarkeerd
-                const favouritePromptsData = prompts.filter(prompt => favPrompts.includes(prompt.id));
-                setFavouritePrompts(favouritePromptsData);
+                const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
+                if (loggedInUser?.id) {
+                    // Controleer of de ingelogde gebruiker deze gebruiker volgt
+                    const isFollowing = userData.followers.some(
+                        (follower) => follower.id === loggedInUser.id
+                    );
+                    setIsFollowing(isFollowing);
+                }
             } catch (err) {
-                setError('User not found');
+                setError("User not found");
             } finally {
                 setLoading(false);
+                hasFetched.current = true; // Markeer als opgehaald
             }
         };
-
         fetchUserData();
-        hasFetched.current = true;
     }, [name]);
+
+    const handleFollow = async () => {
+        const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const token = localStorage.getItem("token");
+
+        if (!loggedInUser?.id || !token) {
+            alert("You must be logged in to follow users.");
+            return;
+        }
+
+        // Controleer of de gebruiker zichzelf probeert te volgen
+        if (loggedInUser.id === user.id) {
+            alert("You cannot follow yourself.");
+            return;
+        }
+
+        try {
+            await axios.post(`/api/follow/${user.id}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            setIsFollowing(true); // Update de UI
+            setUser((prevUser) => ({
+                ...prevUser,
+                followers_count: prevUser.followers_count + 1, // Verhoog het aantal volgers
+            }));
+        } catch (err) {
+            alert("Error while following the user.");
+            console.error(err);
+        }
+    };
+
+    const handleUnfollow = async () => {
+        const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const token = localStorage.getItem("token");
+
+        if (!loggedInUser?.id || !token) {
+            alert("You must be logged in to unfollow users.");
+            return;
+        }
+
+        // Controleer of de gebruiker zichzelf probeert te ontvolgen
+        if (loggedInUser.id === user.id) {
+            alert("You cannot unfollow yourself.");
+            return;
+        }
+
+        try {
+            await axios.post(`/api/unfollow/${user.id}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            setIsFollowing(false); // Update de UI
+            setUser((prevUser) => ({
+                ...prevUser,
+                followers_count: prevUser.followers_count - 1, // Verlaag het aantal volgers
+            }));
+        } catch (err) {
+            alert("Error while unfollowing the user.");
+            console.error(err);
+        }
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -106,29 +176,29 @@ const Profile = () => {
                     </div>
 
                     <div className="mt-6 flex justify-center gap-4">
-                        <button
-                            className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 focus:outline-none">
-                            Follow
-                        </button>
+                        {localStorage.getItem("user") ? (
+                            isFollowing ? (
+                                <button
+                                    onClick={handleUnfollow}
+                                    className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 focus:outline-none"
+                                >
+                                    Unfollow
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleFollow}
+                                    className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 focus:outline-none"
+                                >
+                                    Follow
+                                </button>
+                            )
+                        ) : (
+                            <p className="text-gray-500">Log in to follow users.</p>
+                        )}
                     </div>
-                </div>
 
-                {/* Zoekbalk */}
-                <div className="mt-8 w-full max-w-lg">
-                    <form className="relative">
-                        <input type="text" placeholder="Search AI prompts..."
-                               className="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"/>
-                        <button type="submit"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-orange-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                      d="M10 18l6-6-6-6"/>
-                            </svg>
-                        </button>
-                    </form>
-                </div>
 
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mt-8">
                     {/* Favourite Prompts */}
@@ -137,7 +207,7 @@ const Profile = () => {
                         <div className="flex flex-col gap-6">
                             {favouritePrompts.length > 0 ? (
                                 favouritePrompts.map((prompt) => (
-                                    <Link to={`/prompt/${prompt.id}`} key={prompt.id}
+                                    <Link to={`/prompt/${prompt.favourite_id}`} key={prompt.id}
                                           className="flex items-center gap-4 bg-gray-50 p-6 rounded-lg shadow-lg bg-white hover:bg-gray-100 transition-all">
                                         <div
                                             className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">F
@@ -156,7 +226,7 @@ const Profile = () => {
                                                     <path
                                                         d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z"/>
                                                 </svg>
-                                                <p className="text-gray-800 font-medium">{prompt.rating || 'N/A'}</p>
+                                                <p className="text-gray-800 font-medium">{prompt.average_rating > 0 ? prompt.average_rating : 'N/A'}</p>
                                             </div>
                                         </div>
                                     </Link>
@@ -192,7 +262,7 @@ const Profile = () => {
                                                     <path
                                                         d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z"/>
                                                 </svg>
-                                                <p className="text-gray-800 font-medium">{prompt.rating || 'N/A'}</p>
+                                                <p className="text-gray-800 font-medium">{prompt.average_rating > 0 ? prompt.average_rating : 'N/A'}</p>
                                             </div>
                                         </div>
                                     </Link>

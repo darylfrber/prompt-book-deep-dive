@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Components/Navbar';
-import { log } from 'console';
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Home() {
 
@@ -20,7 +19,6 @@ export default function Home() {
 
         fetchData();
     }, []);
-
 
     return (
         <>
@@ -66,10 +64,17 @@ export default function Home() {
     )
 };
 
-const TrendingPrompt = ({ id, title, description }) => (
+const TrendingPrompt = ({ id, title, description, tags }) => (
     <Link to={`/prompt/${id}`} className="p-4 bg-gradient-to-r from-orange-200 to-orange-400 rounded-md shadow-sm hover:shadow-md transition duration-200">
         <h3 className="text-center text-lg font-bold text-gray-800">{title}</h3>
         <p className="text-center text-sm text-gray-600 mt-2">{description}</p>
+        {tags.map((tag, index) => (
+            <div className="flex justify-center pt-2">
+                <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full shadow-sm hover:bg-blue-200 transition-colors">
+                    {tag}
+                </span>
+            </div>
+        ))}
     </Link>
 );
 
@@ -79,14 +84,18 @@ function Footer({ prompts }) {
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <h2 className="text-center text-lg font-semibold text-gray-900">Trending Prompts</h2>
                 <div className="mx-auto mt-10 grid max-w-lg grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-10 sm:max-w-xl lg:mx-0 lg:max-w-none">
-                    {prompts.map((prompt) => (
-                        <TrendingPrompt
-                            key={prompt.id}
-                            id={prompt.id}
-                            title={prompt.title}
-                            description={`Description or details about ${prompt.description}.`}
-                        />
-                    ))}
+                    {prompts
+                        .slice(-5) // Get the last 5 prompts
+                        .reverse()
+                        .map((prompt) => (
+                            <TrendingPrompt
+                                key={prompt.id}
+                                id={prompt.id}
+                                title={prompt.title}
+                                tags={prompt.tags}
+                                description={prompt.description}
+                            />
+                        ))}
 
                 </div>
             </div>

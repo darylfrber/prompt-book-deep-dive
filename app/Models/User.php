@@ -54,8 +54,10 @@ class User extends Authenticatable
      */
     public function followers()
     {
-        return $this->belongsToMany(User::class, 'user_follows', 'followed_id', 'follower_id');
+        return $this->belongsToMany(User::class, 'user_follows', 'followed_id', 'follower_id')
+            ->withPivot('followed_id', 'follower_id');
     }
+
 
     /**
      * Relatie: gebruikers die deze gebruiker volgt.

@@ -29,7 +29,7 @@ const SinglePrompt = () => {
                 // Haal de gebruiker uit de localStorage
                 const user = JSON.parse(localStorage.getItem("user"));
                 if (user) {
-                    const favourites = user.favourites || [];  // Zorg ervoor dat favourites altijd een array is
+                    const favourites = Array.isArray(user.favourites) ? user.favourites : [];
                     setIsFavourite(favourites.includes(data.id)); // Zet isFavourite op basis van of de prompt in favourites staat
                 }
             } catch (err) {
@@ -38,6 +38,7 @@ const SinglePrompt = () => {
                 setLoading(false);
             }
         };
+
 
         fetchPrompt();
         hasFetched.current = true; // Markeer als opgehaald
@@ -48,6 +49,8 @@ const SinglePrompt = () => {
         // Haal de gebruiker en token op uit de localStorage
         const user = JSON.parse(localStorage.getItem("user")); // Pas eventueel de key aan
         const token = localStorage.getItem("token");
+        console.log("User:", user);
+        console.log("Favourites:", user?.favourites);
 
         if (!user || !token) {
             alert("You must be logged in to favourite this item.");
@@ -55,29 +58,37 @@ const SinglePrompt = () => {
         }
 
         try {
-            // Haal de huidige favorieten en check of de prompt al favoriet is
-            const updatedFavourites = [...user.favourites];
-            const isAlreadyFavourite = updatedFavourites.includes(prompt.id);
+            // Zet favourites object om naar een array
+            const favouriteIds = user?.favourites ? Object.values(user.favourites) : [];
+
+// Controleer of de prompt al in de favorieten zit
+            const isAlreadyFavourite = favouriteIds.includes(prompt.id);
+
+            console.log("Favourite IDs:", favouriteIds);
+            console.log("Is already favourite:", isAlreadyFavourite);
 
             if (isAlreadyFavourite) {
-                // Als al favoriet, verwijder de prompt uit de lijst
-                const index = updatedFavourites.indexOf(prompt.id);
-                updatedFavourites.splice(index, 1);
+                // Verwijder prompt ID uit de favorieten
+                const updatedFavourites = favouriteIds.filter(favId => favId !== prompt.id);
+                console.log("Updated Favourites:", updatedFavourites);
+                user.favourites = updatedFavourites;
             } else {
-                // Als niet favoriet, voeg de prompt toe aan de lijst
-                updatedFavourites.push(prompt.id);
+                // Voeg prompt ID toe aan de favorieten
+                favouriteIds.push(prompt.id);
+                console.log("Updated Favourites:", favouriteIds);
+                user.favourites = favouriteIds;
             }
 
-            // Werk de gebruiker in localStorage bij
-            user.favourites = updatedFavourites;
+// Sla de bijgewerkte favorieten op in localStorage
             localStorage.setItem("user", JSON.stringify(user));
 
-            // Update de UI
+// Update de UI
             setIsFavourite(!isAlreadyFavourite);
             setPrompt(prevPrompt => ({
                 ...prevPrompt,
                 favourites: isAlreadyFavourite ? prevPrompt.favourites - 1 : prevPrompt.favourites + 1
             }));
+
 
             // Stuur de gewijzigde favorieten naar de server
             const response = await fetch(`/api/prompts/${prompt.id}/favourite`, {
@@ -102,17 +113,60 @@ const SinglePrompt = () => {
 
 
 
-    const handleReviewSubmit = (e) => {
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+
         const token = localStorage.getItem("token");
-        if (token) {
-            e.preventDefault();
+        const user = JSON.parse(localStorage.getItem("user")); // Haal de ingelogde gebruiker op
+
+        if (!token || !user) {
+            alert("You must be logged in to leave a review.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/prompts/${id}/reviews`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    rating: reviewRating,
+                    review: reviewText,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to submit review.");
+            }
+
+            const newReview = await response.json();
+
+            // Voeg de gebruiker vanuit localStorage toe aan de nieuwe review
+            const reviewWithUser = {
+                ...newReview.review,
+                user: { name: user.name }, // Voeg de naam toe vanuit de localStorage-user
+            };
+
+            // Voeg de nieuwe review toe aan de bestaande reviews
+            setPrompt((prevPrompt) => ({
+                ...prevPrompt,
+                reviews: [reviewWithUser, ...prevPrompt.reviews],
+            }));
+
             setSubmitted(true);
+            alert("Your review has been successfully submitted!");
             setReviewText("");
             setReviewRating(0);
-        } else {
-            alert("You must be logged in to leave a review.");
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            alert(`Error: ${error.message}`);
         }
     };
+
+
 
     if (loading) {
         return <p className="text-center mt-16 text-gray-600">Loading...</p>;

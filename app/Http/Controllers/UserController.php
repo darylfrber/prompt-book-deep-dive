@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prompt;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -97,34 +98,52 @@ class UserController extends Controller
 
     public function getUserInfo($name): JsonResponse
     {
-        // Haal de gebruiker op via de naam (case-insensitief)
         $user = User::whereRaw('LOWER(name) = ?', [strtolower($name)])->first();
 
-        // Controleer of de gebruiker bestaat
         if (!$user) {
             return response()->json([
                 'message' => 'User not found.',
             ], 404);
         }
 
-        // Verhoog de page_counter met 1
-        $user->page_counter = $user->page_counter + 1;
-        $user->save();  // Sla de wijziging op
+        $user->page_counter += 1;
+        $user->save();
 
-        // Haal de aantallen followers en following op
-        $followersCount = $user->followers()->count(); // Aantal volgers
-        $followingCount = $user->following()->count(); // Aantal mensen die deze gebruiker volgt
+        // Aantal volgers en de volledige lijst van volgers
+        $followers = $user->followers()
+            ->select('users.id', 'users.name', 'user_follows.followed_id as pivot_followed_id', 'user_follows.follower_id as pivot_follower_id')
+            ->get();
 
-        // Haal de prompts op die de gebruiker heeft aangemaakt
-        $userPrompts = $user->prompts()->get();  // Veronderstel dat de relatie 'prompts' bestaat
+        $followersCount = $followers->count();
+        $followingCount = $user->following()->count();
 
-        // Voeg de aantallen en prompts toe aan de gebruiker
+        // Alle prompts van de gebruiker ophalen
+        $userPrompts = $user->prompts()->get();
+
+        // Haal de favoriete prompts ID's op uit de 'favourites' data
+        $favouritePromptIds = array_keys($user->favourites);
+
+        // Als er favoriete prompts zijn, haal ze op en voeg de prompt_id toe
+        $favouritePrompts = [];
+        if (count($favouritePromptIds) > 0) {
+            $favouritePrompts = Prompt::whereIn('id', $favouritePromptIds)->get()->map(function ($prompt) use ($user) {
+                // Voeg de prompt_id (uit favourites) toe aan de prompt data
+                $prompt->favourite_id = $user->favourites[$prompt->id]; // Dit is het aantal 'favourites' dat de prompt heeft
+                return $prompt;
+            });
+        }
+
+        // De verzamelde gegevens toevoegen aan de gebruiker
         $user->followers_count = $followersCount;
         $user->following_count = $followingCount;
-        $user->prompts = $userPrompts;  // Voeg de prompts toe aan de user
+        $user->followers = $followers; // Volgers-lijst toevoegen
+        $user->prompts = $userPrompts;
+        $user->favourite_prompts = $favouritePrompts; // Favoriete prompts toevoegen
 
         return response()->json([
             'user' => $user,
         ], 200);
     }
+
+
 }

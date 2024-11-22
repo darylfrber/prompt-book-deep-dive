@@ -16,7 +16,7 @@ class Review extends Model
         'prompt_id',
         'user_id',
         'rating',
-        'comment',
+        'review',
     ];
 
     public function prompt()
