@@ -180,6 +180,9 @@ const SinglePrompt = () => {
         return <p className="text-center mt-16 text-gray-600">Prompt not found.</p>;
     }
 
+    console.log(prompt);
+    
+
     return (
         <>
             <Navbar />

@@ -11,7 +11,7 @@ export function MessageCard({ prompts }) {
     return (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 p-6">
             {prompts.map((prompt) => (
-                <div className="w-full" key={prompt.id}>
+                <div className="w-full bg-white" key={prompt.id}>
                     <div className="h-auto border rounded-lg p-4 shadow-md flex flex-col">
                         <Link to={`/prompt/${prompt.id}`} className="text-2xl font-bold tracking-tight text-neutral-700">
                             {prompt.title}
