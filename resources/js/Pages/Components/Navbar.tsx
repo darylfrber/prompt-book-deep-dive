@@ -37,7 +37,7 @@ export default function Navbar() {
         <nav className="flex justify-between items-center p-4 text-black">
             <Link to="/">
                 <div className="flex items-center space-x-2">
-                    <img src="https://media.discordapp.net/attachments/1307996765953462305/1308745247701991435/logo.png?ex=673f0f7e&is=673dbdfe&hm=d74f600f88e3fbf2def93037aacbcb8657a9e48ca84a35be42e092bf0c8d8a11&=&format=webp&quality=lossless&width=883&height=618" alt="Logo" className="w-10 h-10" />
+                    <img src="../images/logo.png" alt="Logo" className="w-10 h-10" />
                     <span className="text-xl font-bold">Prompt Hive</span>
                 </div>
             </Link>
