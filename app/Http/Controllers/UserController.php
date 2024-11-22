@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prompt;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -114,18 +115,35 @@ class UserController extends Controller
             ->get();
 
         $followersCount = $followers->count();
-
         $followingCount = $user->following()->count();
+
+        // Alle prompts van de gebruiker ophalen
         $userPrompts = $user->prompts()->get();
 
+        // Haal de favoriete prompts ID's op uit de 'favourites' data
+        $favouritePromptIds = array_keys($user->favourites);
+
+        // Als er favoriete prompts zijn, haal ze op en voeg de prompt_id toe
+        $favouritePrompts = [];
+        if (count($favouritePromptIds) > 0) {
+            $favouritePrompts = Prompt::whereIn('id', $favouritePromptIds)->get()->map(function ($prompt) use ($user) {
+                // Voeg de prompt_id (uit favourites) toe aan de prompt data
+                $prompt->favourite_id = $user->favourites[$prompt->id]; // Dit is het aantal 'favourites' dat de prompt heeft
+                return $prompt;
+            });
+        }
+
+        // De verzamelde gegevens toevoegen aan de gebruiker
         $user->followers_count = $followersCount;
         $user->following_count = $followingCount;
         $user->followers = $followers; // Volgers-lijst toevoegen
         $user->prompts = $userPrompts;
+        $user->favourite_prompts = $favouritePrompts; // Favoriete prompts toevoegen
 
         return response()->json([
             'user' => $user,
         ], 200);
     }
+
 
 }

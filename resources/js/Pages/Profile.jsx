@@ -11,19 +11,23 @@ const Profile = () => {
     const [isFollowing, setIsFollowing] = useState(false);
     const [favouritePrompts, setFavouritePrompts] = useState([]);
 
-    const hasFetched = useRef(false);
+    const hasFetched = useRef(false); // Dit voorkomt dubbele fetch-aanroepen
 
     useEffect(() => {
         const fetchUserData = async () => {
+            if (hasFetched.current) return; // Alleen ophalen als er nog niet is opgehaald
+
             try {
                 const response = await axios.get(`/api/user/${name}`);
-                setUser(response.data.user);
+                const userData = response.data.user;
+
+                setUser(userData);
+                setFavouritePrompts(userData.favourite_prompts); // Zet de favoriete prompts direct
 
                 const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
-
                 if (loggedInUser?.id) {
                     // Controleer of de ingelogde gebruiker deze gebruiker volgt
-                    const isFollowing = response.data.user.followers.some(
+                    const isFollowing = userData.followers.some(
                         (follower) => follower.id === loggedInUser.id
                     );
                     setIsFollowing(isFollowing);
@@ -32,12 +36,11 @@ const Profile = () => {
                 setError("User not found");
             } finally {
                 setLoading(false);
+                hasFetched.current = true; // Markeer als opgehaald
             }
         };
-
         fetchUserData();
     }, [name]);
-
 
     const handleFollow = async () => {
         const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -104,7 +107,6 @@ const Profile = () => {
             console.error(err);
         }
     };
-
 
     if (loading) {
         return <div>Loading...</div>;
@@ -205,7 +207,7 @@ const Profile = () => {
                         <div className="flex flex-col gap-6">
                             {favouritePrompts.length > 0 ? (
                                 favouritePrompts.map((prompt) => (
-                                    <Link to={`/prompt/${prompt.id}`} key={prompt.id}
+                                    <Link to={`/prompt/${prompt.favourite_id}`} key={prompt.id}
                                           className="flex items-center gap-4 bg-gray-50 p-6 rounded-lg shadow-lg bg-white hover:bg-gray-100 transition-all">
                                         <div
                                             className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">F
@@ -224,7 +226,7 @@ const Profile = () => {
                                                     <path
                                                         d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z"/>
                                                 </svg>
-                                                <p className="text-gray-800 font-medium">{prompt.rating || 'N/A'}</p>
+                                                <p className="text-gray-800 font-medium">{prompt.average_rating > 0 ? prompt.average_rating : 'N/A'}</p>
                                             </div>
                                         </div>
                                     </Link>
@@ -260,7 +262,7 @@ const Profile = () => {
                                                     <path
                                                         d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z"/>
                                                 </svg>
-                                                <p className="text-gray-800 font-medium">{prompt.rating || 'N/A'}</p>
+                                                <p className="text-gray-800 font-medium">{prompt.average_rating > 0 ? prompt.average_rating : 'N/A'}</p>
                                             </div>
                                         </div>
                                     </Link>
