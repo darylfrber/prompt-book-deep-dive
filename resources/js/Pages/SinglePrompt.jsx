@@ -221,7 +221,7 @@ const SinglePrompt = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 .587l3.668 7.425 8.167 1.163-5.917 5.809 1.395 8.116L12 18.897l-7.313 3.844 1.395-8.116L.165 9.175l8.167-1.163L12 .587z" />
                                 </svg>
-                                <p className="text-gray-600 font-semibold">{prompt.rating || 'N/A'}</p>
+                                <p className="text-gray-600 font-semibold">{prompt.average_rating || 'N/A'}</p>
                             </div>
                         </div>
                     </div>
