@@ -37,7 +37,7 @@ export default function Navbar() {
         <nav className="flex justify-between items-center p-4 text-black">
             <Link to="/">
                 <div className="flex items-center space-x-2">
-                    <img src="../images/logo.png" alt="Logo" className="w-10 h-10" />
+                    <img src="../../../images/logo.png" alt="Logo" className="w-10 h-10" />
                     <span className="text-xl font-bold">Prompt Hive</span>
                 </div>
             </Link>
