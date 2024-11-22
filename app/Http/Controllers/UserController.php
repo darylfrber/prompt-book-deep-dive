@@ -109,7 +109,7 @@ class UserController extends Controller
         $user->page_counter += 1;
         $user->save();
 
-        // Aantal volgers en de volledige lijst van volgers
+        // Haal de volgers en tellers op
         $followers = $user->followers()
             ->select('users.id', 'users.name', 'user_follows.followed_id as pivot_followed_id', 'user_follows.follower_id as pivot_follower_id')
             ->get();
@@ -117,28 +117,31 @@ class UserController extends Controller
         $followersCount = $followers->count();
         $followingCount = $user->following()->count();
 
-        // Alle prompts van de gebruiker ophalen
+        // Haal alle prompts van de gebruiker op
         $userPrompts = $user->prompts()->get();
 
-        // Haal de favoriete prompts ID's op uit de 'favourites' data
-        $favouritePromptIds = array_keys($user->favourites);
+        // Haal de favoriete prompt-ID's op
+        $favouritePromptIds = $user->favourites; // Dit zou een array moeten zijn met de prompt-ID's
 
-        // Als er favoriete prompts zijn, haal ze op en voeg de prompt_id toe
+        // Controleer of er favoriete prompts zijn
         $favouritePrompts = [];
-        if (count($favouritePromptIds) > 0) {
-            $favouritePrompts = Prompt::whereIn('id', $favouritePromptIds)->get()->map(function ($prompt) use ($user) {
-                // Voeg de prompt_id (uit favourites) toe aan de prompt data
-                $prompt->favourite_id = $user->favourites[$prompt->id]; // Dit is het aantal 'favourites' dat de prompt heeft
-                return $prompt;
-            });
+        if (!empty($favouritePromptIds)) {
+            // Haal de prompts op met de juiste ID's
+            $favouritePrompts = Prompt::whereIn('id', $favouritePromptIds)
+                ->get()
+                ->map(function ($prompt) use ($user) {
+                    // Stel favourite_id in als de prompt-ID
+                    $prompt->favourite_id = $prompt->id;
+                    return $prompt;
+                });
         }
 
-        // De verzamelde gegevens toevoegen aan de gebruiker
+        // Voeg de gegevens toe aan de gebruiker
         $user->followers_count = $followersCount;
         $user->following_count = $followingCount;
-        $user->followers = $followers; // Volgers-lijst toevoegen
+        $user->followers = $followers; // Voeg de lijst van volgers toe
         $user->prompts = $userPrompts;
-        $user->favourite_prompts = $favouritePrompts; // Favoriete prompts toevoegen
+        $user->favourite_prompts = $favouritePrompts; // Voeg de favoriete prompts toe
 
         return response()->json([
             'user' => $user,

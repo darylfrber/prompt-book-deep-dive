@@ -16,12 +16,14 @@ const Profile = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             if (hasFetched.current) return; // Alleen ophalen als er nog niet is opgehaald
+            hasFetched.current = true; // Markeer dat er data is opgehaald
 
             try {
                 const response = await axios.get(`/api/user/${name}`);
                 const userData = response.data.user;
 
                 setUser(userData);
+                console.log(userData)
                 setFavouritePrompts(userData.favourite_prompts); // Zet de favoriete prompts direct
 
                 const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -36,11 +38,11 @@ const Profile = () => {
                 setError("User not found");
             } finally {
                 setLoading(false);
-                hasFetched.current = true; // Markeer als opgehaald
             }
         };
+
         fetchUserData();
-    }, [name]);
+    }, [name]); // Afhankelijk van 'name' om de data opnieuw op te halen als de naam verandert
 
     const handleFollow = async () => {
         const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
